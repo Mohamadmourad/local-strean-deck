@@ -185,24 +185,25 @@
 
     /* Mobile */
     @media (max-width: 480px) {
-      body { align-items: flex-start; overflow: auto; }
+      body { overflow: hidden; }
 
-      .deck { padding: 24px 16px; gap: 24px; }
+      .deck { padding: 16px 12px; gap: 16px; }
 
-      .deck-title { font-size: 0.9rem; letter-spacing: 4px; }
+      .deck-title { font-size: 0.8rem; letter-spacing: 4px; margin-bottom: 0; }
 
-      .button-row { gap: 10px; justify-content: center; }
+      .section { gap: 8px; }
+
+      .button-row { gap: 8px; justify-content: center; }
 
       .btn {
-        width: calc((100vw - 72px) / 3);
-        height: calc((100vw - 72px) / 3);
-        max-width: 100px;
-        max-height: 100px;
-        border-radius: 14px;
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        gap: 4px;
       }
 
-      .btn .icon { width: 24px; height: 24px; }
-      .btn .label { font-size: 0.55rem; }
+      .btn .icon { width: 20px; height: 20px; }
+      .btn .label { font-size: 0.45rem; letter-spacing: 1px; }
     }
 
   </style>
@@ -262,7 +263,7 @@
   </div>
 
   <script>
-    const API = "http://localhost:5005";
+    const API = "http://192.168.1.51:5005";
 
     async function send(url, body = {}) {
       try {
