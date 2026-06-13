@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stream Deck</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+
+    /* Ambient glow background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(88, 40, 200, 0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 50%, rgba(40, 120, 200, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .deck {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      padding: 40px;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .deck-title {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #444;
+      padding-left: 4px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      background: linear-gradient(145deg, #141420, #0e0e18);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.97);
+      transition: all 0.05s ease;
+    }
+
+    .btn .icon {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      z-index: 1;
+      color: #fff;
+    }
+
+    .btn .icon svg {
+      width: 100%;
+      height: 100%;
+      fill: currentColor;
+    }
+
+    .btn .label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #666;
+      position: relative;
+      z-index: 1;
+      transition: color 0.2s ease;
+    }
+
+    .btn:hover .label {
+      color: #999;
+    }
+
+    /* Music buttons - purple accent */
+    .btn.music::before {
+      background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15), transparent 70%);
+    }
+    .btn.music:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+    }
+    .btn.music:hover .icon { filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); }
+
+    /* Discord buttons - indigo accent */
+    .btn.discord::before {
+      background: radial-gradient(circle at center, rgba(88, 101, 242, 0.15), transparent 70%);
+    }
+    .btn.discord:hover {
+      border-color: rgba(88, 101, 242, 0.3);
+      box-shadow: 0 8px 32px rgba(88, 101, 242, 0.1);
+    }
+    .btn.discord:hover .icon { filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.5)); }
+
+    /* Chrome buttons - blue accent */
+    .btn.chrome::before {
+      background: radial-gradient(circle at center, rgba(56, 189, 248, 0.15), transparent 70%);
+    }
+    .btn.chrome:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 8px 32px rgba(56, 189, 248, 0.1);
+    }
+    .btn.chrome:hover .icon { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5)); }
+
+    /* Feedback animation */
+    .btn.flash {
+      animation: flash 0.4s ease;
+    }
+
+    @keyframes flash {
+      0%   { background: linear-gradient(145deg, #141420, #0e0e18); }
+      30%  { background: linear-gradient(145deg, #1e1e35, #16162a); }
+      100% { background: linear-gradient(145deg, #141420, #0e0e18); }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="deck-title">Stream Deck</div>
+
+    <!-- Music Controls -->
+    <div class="section">
+      <div class="section-label">Music</div>
+      <div class="button-row">
+        <button class="btn music" onclick="music('PREVIOUS')">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></span>
+          <span class="label">Prev</span>
+        </button>
+        <button class="btn music" onclick="music('PLAY')">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+          <span class="label">Play</span>
+        </button>
+        <button class="btn music" onclick="music('NEXT')">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></span>
+          <span class="label">Next</span>
+        </button>
+        <button class="btn music" onclick="music('VOL_DOWN')">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M18.5 12A4.5 4.5 0 0 0 16 7.97v8.05c1.48-.73 2.5-2.25 2.5-3.02zM5 9v6h4l5 5V4L9 9H5z"/></svg></span>
+          <span class="label">Vol -</span>
+        </button>
+        <button class="btn music" onclick="music('VOL_UP')">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-3.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></span>
+          <span class="label">Vol +</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Discord Controls -->
+    <div class="section">
+      <div class="section-label">Discord</div>
+      <div class="button-row">
+        <button class="btn discord" onclick="discord('mute')">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></span>
+          <span class="label">Mute</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Browser Controls -->
+    <div class="section">
+      <div class="section-label">Browser</div>
+      <div class="button-row">
+        <button class="btn chrome" onclick="chrome()">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
+          <span class="label">Open</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "http://localhost:5000";
+
+    async function send(url, body = {}) {
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } catch {}
+    }
+
+    function music(action) {
+      flash(event.currentTarget);
+      send(`${API}/music/musicHandler`, { action });
+    }
+
+    function discord(action) {
+      flash(event.currentTarget);
+      send(`${API}/discord/${action}`);
+    }
+
+    function chrome() {
+      flash(event.currentTarget);
+      send(`${API}/browser/open`);
+    }
+
+    function flash(el) {
+      el.classList.remove("flash");
+      void el.offsetWidth;
+      el.classList.add("flash");
+    }
+  </script>
+</body>
+</html>
