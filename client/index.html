@@ -12,10 +12,11 @@
       background: #0a0a0f;
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       color: #e0e0e0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     /* Ambient glow background */
@@ -185,7 +186,6 @@
 
     /* Mobile */
     @media (max-width: 480px) {
-      body { overflow: hidden; }
 
       .deck { padding: 16px 12px; gap: 16px; }
 
