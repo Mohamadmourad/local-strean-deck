@@ -85,6 +85,8 @@
       transition: all 0.2s ease;
       overflow: hidden;
       flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .btn::before {
@@ -181,6 +183,28 @@
       100% { background: linear-gradient(145deg, #141420, #0e0e18); }
     }
 
+    /* Mobile */
+    @media (max-width: 480px) {
+      body { align-items: flex-start; overflow: auto; }
+
+      .deck { padding: 24px 16px; gap: 24px; }
+
+      .deck-title { font-size: 0.9rem; letter-spacing: 4px; }
+
+      .button-row { gap: 10px; justify-content: center; }
+
+      .btn {
+        width: calc((100vw - 72px) / 3);
+        height: calc((100vw - 72px) / 3);
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 14px;
+      }
+
+      .btn .icon { width: 24px; height: 24px; }
+      .btn .label { font-size: 0.55rem; }
+    }
+
   </style>
 </head>
 <body>
@@ -238,7 +262,7 @@
   </div>
 
   <script>
-    const API = "http://localhost:5000";
+    const API = "http://localhost:5005";
 
     async function send(url, body = {}) {
       try {

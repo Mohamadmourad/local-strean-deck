@@ -13,8 +13,8 @@ app.use(express.json());
 
 const startServer = async () => {
   try{
-    app.listen(5000, () => {
-      console.log(`Server is running on port 5000`);
+    app.listen(5005, () => {
+      console.log(`Server is running on port 5005`);
     });
   }
   catch(error){
